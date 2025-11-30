@@ -1,0 +1,124 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- GESTION DES UTILISATEURS (Avocats & Secrétaires) ---
+enum Role {
+  ADMIN     // L'avocat titulaire
+  COLLAB    // Avocat collaborateur
+  SECRETARY // Secrétariat
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  dossiers  Dossier[] // Les dossiers gérés par cet utilisateur
+}
+
+// --- GESTION DES CLIENTS ---
+enum ClientType {
+  PHYSIQUE // Personne
+  MORALE   // Entreprise
+}
+
+model Client {
+  id        String     @id @default(cuid())
+  type      ClientType @default(PHYSIQUE)
+  
+  // Identifiants Maroc
+  cin       String?    // Pour personne physique
+  ice       String?    // Pour entreprise (Identifiant Commun de l'Entreprise)
+  rc        String?    // Registre de Commerce
+
+  firstName String?    // Prénom (si physique)
+  lastName  String     // Nom ou Raison Sociale
+  email     String?
+  phone     String?
+  address   String?
+  city      String?    // Ville (ex: Casablanca, Fès)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  dossiers  Dossier[]
+}
+
+// --- GESTION DES DOSSIERS ---
+enum DossierStatus {
+  OUVERT
+  EN_COURS
+  EN_DELIBERE
+  JUGE
+  CLOTURE
+  ARCHIVE
+}
+
+model Dossier {
+  id              String        @id @default(cuid())
+  refCabinet      String        @unique // Votre référence interne (ex: 2024-001)
+  numTribunal     String?       // Numéro au tribunal (ex: 1234/2024)
+  tribunal        String?       // ex: TPI Casablanca
+  titre           String        // ex: Affaire Société X contre M. Y
+  
+  status          DossierStatus @default(OUVERT)
+  dateOuverture   DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Relations
+  clientId        String
+  client          Client        @relation(fields: [clientId], references: [id])
+  
+  assignedToId    String?       // Avocat en charge
+  assignedTo      User?         @relation(fields: [assignedToId], references: [id])
+
+  audiences       Audience[]    // Historique des audiences
+  factures        Facture[]
+}
+
+// --- GESTION DES AUDIENCES ---
+model Audience {
+  id          String   @id @default(cuid())
+  date        DateTime // Date et heure de l'audience
+  description String?  // ex: Retour de notification, Plaidoirie
+  lieu        String?  // Salle 3, TPI Rabat
+  
+  // Relations
+  dossierId   String
+  dossier     Dossier  @relation(fields: [dossierId], references: [id])
+}
+
+// --- GESTION FINANCIÈRE ---
+enum FactureStatus {
+  BROUILLON
+  ENVOYEE
+  PAYEE
+  RETARD
+}
+
+model Facture {
+  id          String        @id @default(cuid())
+  numero      String        @unique // ex: FAC-2024-055
+  dateEmission DateTime     @default(now())
+  montantHT   Float
+  tva         Float         // 10% ou 20%
+  montantTTC  Float
+  status      FactureStatus @default(BROUILLON)
+
+  // Relations
+  dossierId   String
+  dossier     Dossier       @relation(fields: [dossierId], references: [id])
+}
