@@ -1,6 +1,6 @@
 // src/app/(dashboard)/dashboard/finances/nouveau/page.tsx
 import { PrismaClient } from "@prisma/client";
-import { createInvoice } from "@/app/actions/invoices";
+import { createInvoice } from "@/actions/invoices";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

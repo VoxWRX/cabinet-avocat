@@ -1,6 +1,6 @@
 // src/app/(dashboard)/dashboard/dossiers/nouveau/page.tsx
 import { PrismaClient } from "@prisma/client";
-import { createDossier } from "@/app/actions/dossiers";
+import { createDossier } from "@/actions/dossiers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

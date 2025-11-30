@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { createAudience } from "@/app/actions/audiences";
+import { createAudience } from "@/actions/audiences";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
