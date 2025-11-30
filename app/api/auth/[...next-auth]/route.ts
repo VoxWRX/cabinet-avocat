@@ -1,4 +1,4 @@
-// src/app/api/auth/[...nextauth]/route.ts
-import { handlers } from "@/auth"; // On importe les handlers qu'on vient d'exporter
+import { handlers } from "@/auth";
 
 export const { GET, POST } = handlers;
+export const runtime = "nodejs"; // <--- AJOUTEZ CECI pour forcer Node.js (évite les erreurs Edge/Prisma)
