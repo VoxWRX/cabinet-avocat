@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import LoginForm from "@/components/auth/login-form";
 import { Scale } from "lucide-react";
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Connexion | AvocatManager",
 };
 
