@@ -17,7 +17,7 @@ const ClientSchema = z.object({
   firstName: z.string().nullish(),
 
   // Pour l'email, on accepte vide ('') ou null ou un email valide
-  email: z.union([z.literal(""), z.string().email(), z.null(), z.undefined()]),
+  email: z.union([z.literal(""), z.email(), z.null(), z.undefined()]),
 
   phone: z.string().nullish(),
   address: z.string().nullish(),
@@ -46,10 +46,7 @@ export async function createClient(formData: FormData) {
   const validated = ClientSchema.safeParse(rawData);
 
   if (!validated.success) {
-    console.error(
-      "❌ ERREUR DE VALIDATION :",
-      validated.error.flatten().fieldErrors
-    );
+    console.error("❌ ERREUR DE VALIDATION :", z.treeifyError(validated.error));
     throw new Error("Veuillez vérifier les champs obligatoires.");
   }
 

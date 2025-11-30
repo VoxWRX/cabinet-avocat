@@ -6,7 +6,9 @@ import {
   Briefcase,
   FileText,
   Settings,
+  LogOut,
 } from "lucide-react";
+import { signOut } from "@/auth";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Vue d'ensemble", href: "/dashboard" },
@@ -49,6 +51,18 @@ export function Sidebar() {
             <p className="text-xs text-slate-400">Avocat Titulaire</p>
           </div>
         </div>
+      </div>
+      <div className="px-4 pb-4">
+        <form
+          action={async () => {
+            "use server";
+            await signOut();
+          }}
+        >
+          <button className="flex w-full items-center gap-2 rounded-md bg-slate-800 p-3 text-sm font-medium text-slate-300 hover:text-white transition-colors">
+            <LogOut size={16} /> Déconnexion
+          </button>
+        </form>
       </div>
     </div>
   );
