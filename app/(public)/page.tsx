@@ -46,7 +46,7 @@ export default function HomePage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-white border-slate-600 hover:bg-slate-800 h-12"
+                    className="border-white text-white hover:bg-white hover:text-slate-900 h-12 px-8"
                   >
                     Découvrir nos services
                   </Button>

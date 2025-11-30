@@ -1,5 +1,5 @@
 // src/app/(dashboard)/dashboard/finances/page.tsx
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import Link from "next/link";
 import { Plus, Printer, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
 export default async function FinancesPage() {
+  const session = await auth();
+  // VÉRIFICATION DE SÉCURITÉ
+  if (!session?.user) redirect("/login");
+
+  // On récupère le rôle depuis la base (ou depuis la session si configuré)
+  const userRole = await prisma.user.findUnique({
+    where: { email: session.user.email! },
+    select: { role: true }
+  });
+
+  // Si le rôle n'est pas autorisé, on redirige ou on affiche une erreur
+  if (userRole?.role === Role.SECRETARY || userRole?.role === Role.INTERN) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center text-slate-500">
+        ⛔ Accès réservé à la direction et à la comptabilité.
+      </div>
+    );
+  }
+
   const factures = await prisma.facture.findMany({
     orderBy: { dateEmission: "desc" },
     include: {
@@ -73,8 +94,7 @@ export default async function FinancesPage() {
                   <div className="font-medium">
                     {fac.dossier.client.type === "MORALE"
                       ? fac.dossier.client.lastName
-                      : `${fac.dossier.client.firstName ?? ""} ${
-                          fac.dossier.client.lastName ?? ""
+                      : `${fac.dossier.client.firstName ?? ""} ${fac.dossier.client.lastName ?? ""
                         }`.trim()}
                   </div>
                   <div className="text-xs text-slate-500">

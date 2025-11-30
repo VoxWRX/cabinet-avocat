@@ -11,9 +11,12 @@ datasource db {
 
 // --- GESTION DES UTILISATEURS (Avocats & Secrétaires) ---
 enum Role {
-  ADMIN     // L'avocat titulaire
-  COLLAB    // Avocat collaborateur
-  SECRETARY // Secrétariat
+  ADMIN       // Avocat Associé / Gérant
+  COLLAB      // Avocat Collaborateur
+  SECRETARY   // Secrétariat
+  ACCOUNTANT  // Comptable
+  INTERN      // Stagiaire
+  DEV         // Développeur / Maintenance
 }
 
 model User {
