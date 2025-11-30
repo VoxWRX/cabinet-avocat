@@ -1,6 +1,7 @@
 // src/app/(dashboard)/dashboard/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PrismaClient } from "@prisma/client";
+import { RevenueChart } from "@/components/dashboard/revenue-chart";
 
 // On initialise Prisma
 const prisma = new PrismaClient();
@@ -29,6 +30,23 @@ export default async function DashboardPage() {
     include: {
       dossier: true, // On veut aussi les infos du dossier lié
     },
+  });
+
+  // 1. Récupérer toutes les factures
+  const factures = await prisma.facture.findMany({
+    select: { dateEmission: true, montantTTC: true }
+  });
+
+  // 2. Agréger par mois (Logique JS simple)
+  const monthlyData = [
+    { name: "Jan", total: 0 }, { name: "Fév", total: 0 }, { name: "Mar", total: 0 },
+    { name: "Avr", total: 0 }, { name: "Mai", total: 0 }, { name: "Juin", total: 0 },
+    { name: "Juil", total: 0 }, { name: "Août", total: 0 }, { name: "Sep", total: 0 },
+    { name: "Oct", total: 0 }, { name: "Nov", total: 0 }, { name: "Déc", total: 0 },
+  ];
+  factures.forEach(f => {
+    const monthIndex = new Date(f.dateEmission).getMonth(); // 0 pour Janvier, 11 pour Décembre
+    monthlyData[monthIndex].total += f.montantTTC;
   });
 
   return (
@@ -94,6 +112,13 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground">Clients enregistrés</p>
           </CardContent>
         </Card>
+      </div>
+      {/* Ajout du Graphique */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4">
+          <RevenueChart data={monthlyData} />
+        </div>
+        {/* Vous pouvez mettre la liste des derniers dossiers à droite ici (col-span-3) */}
       </div>
     </div>
   );
